@@ -2,4 +2,4 @@
 
 using PaymentGateway.Application.SharedModels;
 
-public record CaptureResponse(AmountModel Amount, string Status, string Decriptions);
+public record CaptureResponse(AmountModel Amount, string Status, string Description);

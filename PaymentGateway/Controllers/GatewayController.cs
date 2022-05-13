@@ -1,15 +1,17 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaymentGateway.Application.Authorize;
 using PaymentGateway.Application.Capture;
 using PaymentGateway.Application.Refund;
 using PaymentGateway.Application.Void;
+using PaymentGateway.Infrastructure;
 using PaymentGateway.Services;
-using PaymentGateway.Validators;
 
 namespace PaymentGateway.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = CustomAuthenticationHandler.SchemaName)]
     public class GatewayController : Controller
     {
         private readonly IMediator mediator;
@@ -19,13 +21,6 @@ namespace PaymentGateway.Controllers
         {
             this.mediator = mediator;
             this.idempotencyService = idempotencyService;
-        }
-
-        // TODO: remove this method
-        [HttpGet("/validate")]
-        public bool ValidateCCNumber(string creditCardNumber)
-        {
-            return new LuhnValidator().IsValid(creditCardNumber);
         }
 
         [HttpPost("/authorize")]

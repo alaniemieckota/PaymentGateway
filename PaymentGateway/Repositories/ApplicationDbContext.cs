@@ -5,7 +5,7 @@ using PaymentGateway.Repositories.Dtos;
 
 public class ApplicationDbContext : DbContext
 {
-    public DbSet<AutorizationDto> Authorizations { get; set; } = null!;
+    public DbSet<AuthorizationDto> Authorizations { get; set; } = null!;
     
     public DbSet<TransactionDto> Transactions { get; set; } = null!;
 

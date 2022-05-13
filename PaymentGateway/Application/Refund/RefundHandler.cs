@@ -3,6 +3,7 @@
 using MediatR;
 using PaymentGateway.Application.SharedModels;
 using PaymentGateway.Exceptions;
+using PaymentGateway.Infrastructure;
 using PaymentGateway.Repositories;
 using PaymentGateway.Repositories.Dtos;
 using System.Threading;
@@ -11,17 +12,21 @@ using System.Threading.Tasks;
 public class RefundHandler : IRequestHandler<RefundRequest, RefundResponse>
 {
     private readonly IUnitOfWork unitOfWork;
+    private readonly ICurrentCallerContext currentUserContext;
 
-    public RefundHandler(IUnitOfWork unitOfWork)
+    public RefundHandler(IUnitOfWork unitOfWork, ICurrentCallerContext currentUserContext)
     {
         this.unitOfWork = unitOfWork;
+        this.currentUserContext = currentUserContext;
     }
 
     public async Task<RefundResponse> Handle(RefundRequest request, CancellationToken cancellationToken)
     {
         this.unitOfWork.BeginTransaction();
         var authorization = await this.unitOfWork.AuthorizationRepository.Get(request.AuthorizationId);
-        if (authorization == null)
+
+        if (authorization == null
+            || authorization.MerchantId != this.currentUserContext.GetCallerId())
         {
             throw new EntityNotFoundException(request.AuthorizationId);
         }
@@ -41,6 +46,7 @@ public class RefundHandler : IRequestHandler<RefundRequest, RefundResponse>
             )
         {
             var description = "Invalid Authroization status";
+
             transaction.Description = description;
             transaction.Status = TransactionStatus.Error;
 
@@ -49,6 +55,7 @@ public class RefundHandler : IRequestHandler<RefundRequest, RefundResponse>
         else if (request.Amount > amountAvailableToRefund)
         {
             var description = "Invalid Amount";
+
             transaction.Description = description;
             transaction.Status = TransactionStatus.Error;
 

@@ -2,6 +2,6 @@
 
 using PaymentGateway.Repositories.Dtos;
 
-public interface IAuthorizationRepository : IGenericRepository<AutorizationDto>
+public interface IAuthorizationRepository : IGenericRepository<AuthorizationDto>
 {
 }

@@ -7,7 +7,7 @@ public class TransactionDto
     [Key]
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
-    public AutorizationDto Authorization { get; set; } = null!;
+    public AuthorizationDto Authorization { get; set; } = null!;
 
     public decimal Amount { get; set; }
 
